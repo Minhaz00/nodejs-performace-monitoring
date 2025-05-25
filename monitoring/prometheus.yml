@@ -1,14 +1,14 @@
-# Prometheus configuration for monitoring the EC2 deployment
+# Prometheus configuration for monitoring EC2 application
 global:
-  scrape_interval: 15s # Set the scrape interval to every 15 seconds
-  evaluation_interval: 15s # Evaluate rules every 15 seconds
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
-# Scrape configuration
 scrape_configs:
   # Monitor Prometheus itself
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+    scrape_interval: 30s
 
   # Monitor Node.js application on EC2
   - job_name: 'nodejs-app'
@@ -25,13 +25,10 @@ scrape_configs:
     scrape_interval: 15s
     scrape_timeout: 10s
 
-# Optional: Add alerting rules
-rule_files:
-  # - "alert_rules.yml"
-
-# Optional: Alertmanager configuration
-# alerting:
-#   alertmanagers:
-#     - static_configs:
-#         - targets:
-#           # - alertmanager:9093
+  # Optional: Monitor local application during development
+  - job_name: 'nodejs-app-local'
+    static_configs:
+      - targets: ['host.docker.internal:3000'] # For local testing
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
